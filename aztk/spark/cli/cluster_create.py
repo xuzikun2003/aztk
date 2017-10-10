@@ -1,8 +1,11 @@
 import argparse
 import typing
-from dtde.config import load_spark_config, cleanup_spark_config
-from dtde import clusterlib, log
-from dtde.config import ClusterConfig
+from aztk.config import load_spark_config, cleanup_spark_config
+from aztk import log
+from aztk.config import ClusterConfig
+from aztk.aztklib import Aztk
+
+
 
 def setup_parser(parser: argparse.ArgumentParser):
     parser.add_argument('--id', dest='cluster_id',
@@ -17,9 +20,6 @@ def setup_parser(parser: argparse.ArgumentParser):
                             help='Number of low priority vms in your cluster')
     parser.add_argument('--vm-size',
                         help='VM size for nodes in your cluster')
-    parser.add_argument('--custom-script',
-                        help='Absolute path of custom bash script (.sh) to run \
-                              on each node')
     parser.add_argument('--username',
                         help='Username to access your cluster (required: --wait flag)')
     parser.add_argument('--password',
@@ -34,26 +34,25 @@ def setup_parser(parser: argparse.ArgumentParser):
 
     parser.add_argument('--no-wait', dest='wait', action='store_false')
     parser.add_argument('--wait', dest='wait', action='store_true')
-    parser.set_defaults(wait=False, size=0, size_low_pri=0)
+    parser.set_defaults(wait=None, size=None, size_low_pri=None)
 
 
 def execute(args: typing.NamedTuple):
+    aztk = Aztk()
+
     # read cluster.yaml configuartion file, overwrite values with args
     cluster_conf = ClusterConfig()
 
     cluster_conf.merge(
-            uid = args.cluster_id,
-            size = args.size,
-            size_low_pri = args.size_low_pri,
-            vm_size = args.vm_size,
-            custom_script = args.custom_script,
-            wait = args.wait,
-            username = args.username,
-            password = args.password,
-            ssh_key = args.ssh_key,
-            docker_repo = args.docker_repo)
-
-    load_spark_config()
+        uid=args.cluster_id,
+        size=args.size,
+        size_low_pri=args.size_low_pri,
+        vm_size=args.vm_size,
+        wait=args.wait,
+        username=args.username,
+        password=args.password,
+        ssh_key=args.ssh_key,
+        docker_repo=args.docker_repo)
 
     log.info("-------------------------------------------")
     log.info("spark cluster id:        %s", cluster_conf.uid)
@@ -61,7 +60,7 @@ def execute(args: typing.NamedTuple):
     log.info(">        dedicated:      %s", cluster_conf.size)
     log.info(">     low priority:      %s", cluster_conf.size_low_pri)
     log.info("spark cluster vm size:   %s", cluster_conf.vm_size)
-    log.info("path to custom script:   %s", cluster_conf.custom_script)
+    log.info("custom scripts:          %s", cluster_conf.custom_scripts)
     log.info("docker repo name:        %s", cluster_conf.docker_repo)
     log.info("wait for cluster:        %s", cluster_conf.wait)
     log.info("username:                %s", cluster_conf.username)
@@ -70,8 +69,8 @@ def execute(args: typing.NamedTuple):
     log.info("-------------------------------------------")
 
     # create spark cluster
-    clusterlib.create_cluster(
-        cluster_conf.custom_script,
+    aztk.cluster.create_cluster(
+        cluster_conf.custom_scripts,
         cluster_conf.uid,
         cluster_conf.size,
         cluster_conf.size_low_pri,
@@ -82,6 +81,7 @@ def execute(args: typing.NamedTuple):
         cluster_conf.docker_repo,
         cluster_conf.wait)
 
-    log.info("Cluster created successfully.")
-
-    cleanup_spark_config()
+    if cluster_conf.wait:
+        log.info("Cluster %s created successfully.", cluster_conf.uid)
+    else:
+        log.info("Cluster %s is being provisioned.", cluster_conf.uid)

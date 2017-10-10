@@ -1,7 +1,6 @@
 ##  cluster settings
 
-# id: <id of the cluster to be created>
-id: spark_cluster
+# id: <id of the cluster to be created, reccommended to specify with --id command line parameter>
 
 # vm_size: <vm-size, see available options here: https://azure.microsoft.com/en-us/pricing/details/virtual-machines/linux/>
 vm_size: standard_a2
@@ -15,10 +14,15 @@ size: 2
 # username: <username for the linux user to be created> (optional)
 username: spark
 
-# docker_repo: <name of docker image repo (for more information, see https://github.com/Azure/thunderbolt/blob/master/docs/12-docker-image.md)>
-docker_repo: jiata/thunderbolt:0.1.0-spark2.2.0-python3.5.4
+# docker_repo: <name of docker image repo (for more information, see https://github.com/Azure/aztk/blob/master/docs/12-docker-image.md)>
+docker_repo: jiata/aztk:0.1.0-spark2.2.0-python3.5.4
 
-# custom_script: <path to custom script to run on each node> (optional)
+# # optional custom scripts to run on the Spark master, Spark worker or all nodes in the cluster
+# custom_script: 
+#   - script: </path/to/script.sh or /path/to/script/directory/>
+#     runOn: <master/worker/all-nodes>
+#   - script: <./relative/path/to/other/script.sh or ./relative/path/to/other/script/directory/>
+#     runOn: <master/worker/all-nodes>
 
 
 # wait: <true/false> 

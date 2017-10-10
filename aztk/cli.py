@@ -1,14 +1,17 @@
 """
-    DTDE module for the CLI entry point
+    AZTK module for the CLI entry point
 
     Note: any changes to this file need have the package reinstalled
     pip install -e .
 """
 import argparse
 from typing import NamedTuple
-from dtde import constants, version, logger, log
-from dtde.spark.cli import spark
-from dtde.models import Software
+import azure.batch.models.batch_error as batch_error
+from aztk import constants, version, logger, log
+import aztk.util as util
+import aztk.error as error
+from aztk.spark.cli import spark
+from aztk.models import Software
 
 def main():
     parser = argparse.ArgumentParser(prog=constants.CLI_EXE)
@@ -25,7 +28,13 @@ def main():
     args = parser.parse_args()
 
     parse_common_args(args)
-    run_software(args)
+
+    try:
+        run_software(args)
+    except batch_error.BatchErrorException as e:
+        util.print_batch_exception(e)
+    except error.AztkError as e:
+        log.error(e.message)
 
 
 def setup_common_args(parser: argparse.ArgumentParser):
