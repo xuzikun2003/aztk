@@ -71,6 +71,9 @@ class Cluster:
         cmd.add_option('-e', 'BATCH_ACCOUNT_URL=$BATCH_ACCOUNT_URL')
         cmd.add_option('-e', 'STORAGE_ACCOUNT_NAME=$STORAGE_ACCOUNT_NAME')
         cmd.add_option('-e', 'STORAGE_ACCOUNT_KEY=$STORAGE_ACCOUNT_KEY')
+        cmd.add_option('-e', 'ADL_TENANT_ID=$ADL_TENANT_ID')
+        cmd.add_option('-e', 'ADL_CLIENT_ID=$ADL_CLIENT_ID')
+        cmd.add_option('-e', 'ADL_CREDENTIAL=$ADL_CREDENTIAL')
         cmd.add_option('-e', 'STORAGE_ACCOUNT_SUFFIX=$STORAGE_ACCOUNT_SUFFIX')
         cmd.add_option('-e', 'AZ_BATCH_POOL_ID=$AZ_BATCH_POOL_ID')
         cmd.add_option('-e', 'AZ_BATCH_NODE_ID=$AZ_BATCH_NODE_ID')
@@ -117,6 +120,12 @@ class Cluster:
                 name="STORAGE_ACCOUNT_KEY", value=self.blob_config.account_key),
             batch_models.EnvironmentSetting(
                 name="STORAGE_ACCOUNT_SUFFIX", value=self.blob_config.account_suffix),
+            batch_models.EnvironmentSetting(
+                name="ADL_TENANT_ID", value=self.secrets_config.adl_tenant_id),
+            batch_models.EnvironmentSetting(
+                name="ADL_CLIENT_ID", value=self.secrets_config.adl_client_id),
+            batch_models.EnvironmentSetting(
+                name="ADL_CREDENTIAL", value=self.secrets_config.adl_credential),
             batch_models.EnvironmentSetting(
                 name="SPARK_MASTER_UI_PORT", value=spark_master_ui_port),
             batch_models.EnvironmentSetting(
@@ -521,7 +530,7 @@ class Cluster:
         ssh_priv_key = self.secrets_config.ssh_priv_key
         if ssh_priv_key is not None:
             ssh_command.add_option("-i", ssh_priv_key)
-        
+
         ssh_command.add_argument("-t")
         ssh_command.add_option("-L", "{0}:localhost:{1}".format(
             webui,  spark_master_ui_port), enable=bool(webui))
@@ -538,7 +547,7 @@ class Cluster:
         user = username if username is not None else '<username>'
         ssh_command.add_argument(
             "{0}@{1} -p {2}".format(user, master_node_ip, master_node_port))
-        
+
         if host is False:
             ssh_command.add_argument("\'sudo docker exec -it spark /bin/bash\'")
 

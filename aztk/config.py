@@ -51,6 +51,10 @@ class SecretsConfig:
         self.storage_account_key = None
         self.storage_account_suffix = None
 
+        self.adl_tenant_id = None
+        self.adl_client_id = None
+        self.adl_credential = None
+
         self.docker_endpoint = None
         self.docker_username = None
         self.docker_password = None
@@ -107,6 +111,22 @@ class SecretsConfig:
         except KeyError:
             raise error.AztkError(
                 "Please specify a storage account suffix in your .aztk/secrets.yaml file")
+
+        try:
+            self.adl_tenant_id = secrets_config['adl']['tenantid']
+        except KeyError:
+            raise error.AztkError(
+                "Please specify an ADL Tenant ID in your .aztk/secrets.yaml file")
+        try:
+            self.adl_client_id = secrets_config['adl']['clientid']
+        except KeyError:
+            raise error.AztkError(
+                "Please specify an ADL Client ID in your .aztk/secrets.yaml file")
+        try:
+            self.adl_credential = secrets_config['adl']['credential']
+        except KeyError:
+            raise error.AztkError(
+                "Please specify an ADL Credential in your .aztk/secrets.yaml file")
 
         docker_config = secrets_config.get('docker')
         if docker_config:
