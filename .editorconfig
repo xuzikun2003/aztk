@@ -3,9 +3,10 @@ indent_style = space
 indent_size = 4
 insert_final_newline = true
 trim_trailing_whitespace = true
+end_of_line = lf
 
-[*.json]
+[*.{json,yml,yaml}]
 indent_size = 2
 
-[*.yml]
+[*.xml]
 indent_size = 2

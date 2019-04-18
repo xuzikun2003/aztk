@@ -1,13 +1,22 @@
 {
-    // "python.linting.pylintEnabled": false,
-    "search.exclude": {
-        "build/**": true,
-        "bin/**": true
-    },
-    "files.exclude": {
-        "**/__pycache__/**/*": true
-    },
-    "python.autoComplete.extraPaths": [
-        "${workspaceRoot}/node"
-    ]
+  // "python.linting.pylintEnabled": false,
+  "search.exclude": {
+    "build/**": true,
+    "bin/**": true
+  },
+  "files.exclude": {
+    "**/__pycache__": true,
+    "*.egg-info": true,
+  },
+  "python.autoComplete.extraPaths": [
+    "${workspaceRoot}/node_scripts"
+  ],
+  "python.formatting.provider": "yapf",
+  "python.venvPath": "${workspaceFolder}/.venv/",
+  "python.pythonPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+  "python.unitTest.pyTestEnabled": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  }
 }

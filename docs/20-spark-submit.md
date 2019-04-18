@@ -1,4 +1,4 @@
-# Submitting a Job
+# Submitting an Application
 Submitting a job to your Spark cluster in this package mimics the experience of a typical standalone cluster. A spark job will be submitted to the system and run to completion.
 
 ## Spark-Submit
@@ -9,15 +9,20 @@ Run a Spark job:
 aztk spark cluster submit --id <name_of_spark_cluster> --name <name_of_spark_job> <executable> <executable_params>
 ```
 
-For example, run a local pi.py file on a Spark cluster
+For example, to run a local pi.py file on a Spark cluster, simply specify the local path of the file:
 ```sh
 aztk spark cluster submit --id spark --name pipy examples/src/main/python/pi.py 100
 ```
 
-NOTE: The job name (--name) must be atleast 3 characters long, can only contain alphanumeric characters including hyphens but excluding underscores, and cannot contain uppercase letters. Each job you submit **must** have a unique name.
+To run a remotely hosted pi.py file on a Spark cluster, specify the remote path of the file and use the '--remote' flag:
+```sh
+aztk spark cluster submit --id spark --name pipy --remote wasbs://path@remote/pi.py 100
+```
+
+NOTE: The job name (--name) must be at least 3 characters long, can only contain alphanumeric characters including hyphens but excluding underscores, and cannot contain uppercase letters. Each job you submit **must** have a unique name.
 
 ## Monitoring job
-If you have set up a [SSH tunnel](./10-clusters.md#ssh-and-port-forwarding) with port fowarding, you can naviate to http://localhost:8080 and http://localhost:4040 to view the progess of the job using the Spark UI
+If you have set up a [SSH tunnel](./10-clusters.html#ssh-and-port-forwarding) with port forwarding, you can navigate to http://localhost:8080 and http://localhost:4040 to view the progress of the job using the Spark UI
 
 
 ## Getting output logs
@@ -28,5 +33,5 @@ aztk spark cluster submit --id spark --name pipy --no-wait examples/src/main/pyt
 ```
 
 ```sh
-aztk spark app logs --id spark --name pipy --tail
+aztk spark cluster app-logs --id spark --name pipy --tail
 ```
